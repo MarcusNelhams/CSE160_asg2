@@ -2,13 +2,10 @@
 
 // point class that holds point values
 class Cube {
-  constructor() {
+  constructor(matrix, color) {
     this.type = 'cube';
-    // this.position = [0.0, 0.0, 0.0];
-    this.color = [1.0, 1.0, 1.0, 1.0];
-    // this.size = 5.0;
-    // this.segments = 10;
-    this.matrix = new Matrix4();
+    this.color = color;
+    this.matrix = matrix;
   }
 
   render() {
@@ -21,6 +18,7 @@ class Cube {
 
     gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
+    // front of cube
     drawTriangle3D([0.0, 0.0, 0.0,  1.0, 1.0, 0.0,  1.0, 0.0, 0.0]);
     drawTriangle3D([0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  1.0, 1.0, 0.0]);
 
@@ -29,5 +27,25 @@ class Cube {
     // top of Cube
     drawTriangle3D([0.0, 1.0, 0.0,  0.0, 1.0, 1.0,  1.0, 1.0, 1.0]);
     drawTriangle3D([0.0, 1.0, 0.0,  1.0, 1.0, 1.0,  1.0, 1.0, 0.0]);
+
+    // bottom of Cube
+    drawTriangle3D([0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  1.0, 0.0, 1.0]);
+    drawTriangle3D([0.0, 0.0, 0.0,  1.0, 0.0, 1.0,  1.0, 0.0, 0.0]);
+
+    gl.uniform4f(u_FragColor, rgba[0]*.7, rgba[1]*.7, rgba[2]*.7, rgba[3]);
+
+    // back of Cube
+    drawTriangle3D([0.0, 0.0, 1.0,  1.0, 1.0, 1.0,  1.0, 0.0, 1.0]);
+    drawTriangle3D([0.0, 0.0, 1.0,  0.0, 1.0, 1.0,  1.0, 1.0, 1.0]);
+
+    gl.uniform4f(u_FragColor, rgba[0]*.8, rgba[1]*.8, rgba[2]*.8, rgba[3]);
+    
+    // right side of Cube
+    drawTriangle3D([1.0, 0.0, 0.0,  1.0, 0.0, 1.0,  1.0, 1.0, 0.0]);
+    drawTriangle3D([1.0, 0.0, 1.0,  1.0, 1.0, 1.0,  1.0, 1.0, 0.0]);
+
+    // left side of Cube
+    drawTriangle3D([0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0, 0.0]);
+    drawTriangle3D([0.0, 0.0, 1.0,  0.0, 1.0, 1.0,  0.0, 1.0, 0.0]);
   }
 }

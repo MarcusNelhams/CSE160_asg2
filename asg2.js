@@ -1,7 +1,5 @@
 // HelloPoint1.js (c) 2012 matsuda
 
-// const { Matrix4 } = require("three");
-
 // Vertex shader program
 var VSHADER_SOURCE = `
   attribute vec4 a_Position;
@@ -38,7 +36,8 @@ function setupWebGL() {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
-  return;
+
+  gl.enable(gl.DEPTH_TEST);
 }
 
 // Connects js vars to GLSL vars in shaders
@@ -80,9 +79,6 @@ function connectVarsToGLSL() {
   return;
 }
 
-// global buffer for Point objects
-// let g_shapesList = [];
-
 // Extract mouse coords and return WebGL coords
 function convertCoordinatesEventToGL(ev) {
   var x = ev.clientX; // Get mouse x position
@@ -96,71 +92,82 @@ function convertCoordinatesEventToGL(ev) {
 }
 
 // global UI elements
-let g_selected_colors = [1.0, 1.0, 1.0, 1.0];
-let g_selected_size = 5;
-let g_selected_shape = 'square';
-let g_selected_segments = 10;
 let g_globalAngle = 0;
-let g_selected_sketchSpeed = 1;
+let g_UpperFrontRightLegAngle = 0;
 
 function addActionsForHtmlUI() {
-  // clear canvas button
-  document.getElementById('clear').onclick = function() { g_shapesList = []; picture = false; renderAllShapes(); last_xy = [0, 0]; };
-
-  // choose shape buttons
-  document.getElementById('squareButton').onclick = function() { g_selected_shape = this.value; };
-  document.getElementById('triangleButton').onclick = function() { g_selected_shape = this.value; };
-  document.getElementById('circleButton').onclick = function() { g_selected_shape = this.value; };
-
-  // color sliders
-  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selected_colors[0] = this.value / 100; });
-  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selected_colors[1] = this.value / 100; });
-  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selected_colors[2] = this.value / 100; });
-
   // Camera slider
   document.getElementById('angleSlide').addEventListener('mousemove', function() { g_globalAngle = this.value; renderAllShapes(); });
+  document.getElementById('UFRLegSlide').addEventListener('mousemove', function() { g_UpperFrontRightLegAngle = this.value; renderAllShapes(); });
   
-  // circle segment count
-  document.getElementById('segmentSlide').addEventListener('mouseup', function() { g_selected_segments = this.value; });
-
-  // etch-a-sketch speed
-  document.getElementById('sketchSpeed').addEventListener('mouseup', function() { g_selected_sketchSpeed = this.value; });
-  return;
 }
 
 
-// keep track if pictuure drawn
-let picture = false;
+function sendTextToHTML(text) {
+  const output = document.getElementById('output');
+  output.textContent = text;
+}
 
 // Render all shapes defined by buffers onto canvas
 function renderAllShapes() {
   // check time for performance check
-  // var start = performance.now()
+  var start = performance.now()
 
   var globalRotMat = new Matrix4().rotate(g_globalAngle,0,1,0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
 
   // Clear Canvas
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // body
-  var body = new Cube();
-  body.color = [1.0, 0.0, 0.0, 1.0];
-  body.matrix.translate(-.25, -.25, 0.0);
-  body.matrix.scale(0.5, 1, 0.5);
-  body.render();
+  // colors
+  let brown = [.44,.15,.01,1]
 
-  // left arm
-  var leftArm = new Cube();
-  leftArm.color = [1,1,0,1];
-  leftArm.matrix.translate(.7, 0, 0.0);
-  leftArm.matrix.rotate(45, 0, 0, 1);
-  leftArm.matrix.scale(0.25, 0.7, 0.5);
+  // body
+  var bodyM = new Matrix4();
+  bodyM.translate(-.3, -.3, -.5);
+  var bodyPosM = new Matrix4(bodyM);
+  bodyM.rotate(0, 0, 1, 0);
+  bodyM.scale(0.6, 0.6, 1.1);
+  var leftArm = new Cube(bodyM, brown);
   leftArm.render();
 
+  // left front leg
+  var leftArmM = new Matrix4(bodyPosM);
+  leftArmM.translate(0.33, -.25, 0.1);
+  leftArmM.rotate(0, 0, 0, 1);
+  leftArmM.scale(0.25, 0.25, 0.25);
+  var leftArm = new Cube(leftArmM, brown);
+  leftArm.render();
+
+  // right front leg
+  var rightArmM = new Matrix4(bodyPosM);
+  rightArmM.translate(0.02, .25, 0.25);
+  rightArmM.rotate(g_UpperFrontRightLegAngle, 1, 0, 0);
+  rightArmM.translate(0.00, -.5, -.125);
+  rightArmM.scale(0.25, 0.5, 0.25);
+  var rightArm = new Cube(rightArmM, brown);
+  rightArm.render();
+
+  // right back leg
+  var rightBackM = new Matrix4(bodyPosM);
+  rightBackM.translate(0.02, -.25, 0.7);
+  rightBackM.rotate(0, 0, 0, 1);
+  rightBackM.scale(0.25, 0.25, 0.25);
+  var rightBack = new Cube(rightBackM, brown);
+  rightBack.render();
+
+  // left back leg
+  var leftBackM = new Matrix4(bodyPosM);
+  leftBackM.translate(0.33, -.25, 0.7);
+  leftBackM.rotate(0, 0, 0, 1);
+  leftBackM.scale(0.25, 0.25, 0.25);
+  var leftBack = new Cube(leftBackM, brown);
+  leftBack.render();
+
   // performance check
-  // var duration = performace.now() - start;
-  // sendTextToHTML(" ms: " + Math.floor(duration) + " fps: " + Math.floor(10000/duration));
+  var duration = performance.now() - start;
+  sendTextToHTML(" ms: " + Math.floor(duration) + " fps: " + Math.floor(10000/duration));
 }
 
 // save previous coords for mouseless draw
@@ -172,7 +179,6 @@ function handleOnClick(ev) {
   if (ev.buttons != 1 && !(keysDown[16])) {
     return;
   }
-  console.log("here");
 
   let [x, y] = [0, 0];
   // get webGL coords from click
@@ -181,34 +187,6 @@ function handleOnClick(ev) {
     last_xy = [x, y];
   } else {
     [x, y] = last_xy;
-  }
-
-  // create and define a new point
-  if (g_selected_shape === 'square') {
-    let point = new Point();
-    point.position = [x, y];
-    point.color = g_selected_colors.slice();
-    point.size = g_selected_size;
-    g_shapesList.push(point);
-  }
-
-  // create and define a new triangle
-  if (g_selected_shape === 'triangle') {
-    let triangle = new Triangle();
-    triangle.position = [x, y];
-    triangle.color = g_selected_colors.slice();
-    triangle.size = g_selected_size;
-    g_shapesList.push(triangle);
-  }
-
-  // create and define a new circle
-  if (g_selected_shape === 'circle') {
-    let circle = new Circle();
-    circle.position = [x, y];
-    circle.color = g_selected_colors.slice();
-    circle.size = g_selected_size;
-    circle.segments = g_selected_segments;
-    g_shapesList.push(circle);
   }
 
   // console.log(g_selected_colors.slice());
@@ -224,31 +202,9 @@ function handleOnKeyDown(ev) {
   // store keys pressed
   keysDown[ev.keyCode] = true;
 
-  // delta
-  let d = g_selected_sketchSpeed/200.0;
-
   // if spacebar down
   if (keysDown[16]) {
-    if (keysDown[87]) {
-      // up
-      last_xy[1] += d;
-      handleOnClick(ev);
-    }
-    if (keysDown[83]) {
-      // down
-      last_xy[1] -= d;
-      handleOnClick(ev);
-    }
-    if (keysDown[65]) {
-      // left
-      last_xy[0] -= d;
-      handleOnClick(ev);
-    }
-    if (keysDown[68]) {
-      // right
-      last_xy[0] += d;
-      handleOnClick(ev);
-    }
+    console.log("16");
   }
 }
 
@@ -270,7 +226,6 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   canvas.onmousedown = handleOnClick;
-  // canvas.onmousemove = handleOnClick;
   document.addEventListener('keydown', handleOnKeyDown);
   document.addEventListener('keyup', handleOnKeyUp);
 

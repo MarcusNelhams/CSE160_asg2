@@ -10,33 +10,14 @@
     Please use a browser that supports "canvas"
     </canvas>
 
-    <p>
-      <button type="button" id="clear">Clear Canvas</button>
-
-    <p>Drawing Mode:</p>
-    <p>
-      <button type="button" id="squareButton" value="square">Squares</button>
-      <button type="button" id="triangleButton" value="triangle">Triangles</button>
-      <button type="button" id="circleButton" value="circle">Circles</button>
-
-    <p>Shape Color:</p>
-    <p> Red
-      <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
-    <p> Green
-      <input type="range" min="0" max="100" value="100" class="slider" id="greenSlide">
-    <p> Blue
-      <input type="range" min="0" max="100" value="100" class="slider" id="blueSlide">
+    <div id="output"></div>
 
     <p> Camera Angle:
       <input type="range" min="0" max="90" value="0" class="slider" id="angleSlide">
     </p>
-    <p> (Circles) Segment Count:
-      <input type="range" min="6" max="20" value="5" class="slider" id="segmentSlide">
+    <p> Upper Right Front Leg Angle:
+      <input type="range" min="-45" max="45" class="slider" id="UFRLegSlide">
     </p>
-
-    <p> Hold down Shift and use WASD for etch-a-sketch! Sketch Speed:
-      <input type="range" min="1" max="10" value="0" class="slider" id="sketchSpeed">     
-
 
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/cuon-utils.js"></script>
