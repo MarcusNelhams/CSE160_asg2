@@ -16,6 +16,7 @@ class Cube {
     // Pass color to shader
     gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
+    // Pass matrix
     gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
     // front of cube

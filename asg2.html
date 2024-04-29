@@ -12,11 +12,17 @@
 
     <div id="output"></div>
 
-    <p> Camera Angle:
-      <input type="range" min="0" max="90" value="0" class="slider" id="angleSlide">
-    </p>
-    <p> Upper Right Front Leg Angle:
+    <p> Front Legs Angle:
       <input type="range" min="-45" max="45" class="slider" id="UFRLegSlide">
+        Animation: 
+      <button type="button" id="FLAnimationOnButton">On</button>
+      <button type="button" id="FLAnimationOffButton">Off</button>
+    </p>
+    <p> Front Knees Angle:
+      <input type="range" min="-45" max="45" class="slider" id="FRKSlide">
+    </p>
+    <p> Front hooves Angle:
+      <input type="range" min="-13" max="13" class="slider" id="FHSlide">
     </p>
 
     <script src="lib/webgl-utils.js"></script>
@@ -27,6 +33,7 @@
     <script src="Triangle.js"></script>
     <script src="Circle.js"></script>
     <script src="Cube.js"></script>
+    <script src="Cone.js"></script>
     <script src="asg2.js"></script>
   </body>
 </html>
