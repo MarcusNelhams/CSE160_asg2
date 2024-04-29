@@ -110,6 +110,11 @@ let g_bodyAngle = 0;
 
 
 function addActionsForHtmlUI() {
+  
+  // camera slider
+  document.getElementById('globSlide').addEventListener('mousemove', function() { g_globalXAngle = this.value });
+
+
   // Front Leg Sliders
   document.getElementById('UFRLegSlide').addEventListener('mousemove', function() { if (!g_animation) g_frontLegAngle = this.value; renderAllShapes(); });
   document.getElementById('FRKSlide').addEventListener('mousemove', function() { g_frontKneeAngle = this.value; renderAllShapes(); });
